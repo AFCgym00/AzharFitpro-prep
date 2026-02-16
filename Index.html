@@ -156,7 +156,64 @@
             html2canvas: { scale: 2, backgroundColor: '#050505' },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         }).from(element).save();
+    }function runMasterEngine() {
+    const name = document.getElementById('custName').value.toUpperCase() || "ELITE ATHLETE";
+    const kg = parseFloat(document.getElementById('wt').value);
+    
+    if(!kg || kg <= 0) {
+        alert("Please enter athlete weight.");
+        return;
     }
+
+    const resultsDiv = document.getElementById('results');
+    const pdfArea = document.getElementById('pdfArea');
+    resultsDiv.style.display = 'block';
+    pdfArea.innerHTML = '';
+
+    // Master Multipliers
+    const protein = Math.round(kg * 2.5);
+    const fats = Math.round(kg * 0.7);
+    let baseCarbs = currentDays === 15 ? kg * 1.5 : kg * 2.5;
+
+    // --- STEP 1: ADD THE PROFESSIONAL HEADER ---
+    let html = `
+        <div class="pdf-header">
+            <div class="header-left">
+                <p style="color: var(--gold); font-weight: 900; letter-spacing: 5px; font-size: 0.7rem; margin-bottom: 5px;">EST. 2026 / ELITE DIVISION</p>
+                <h1>AZHARFIT<br><span style="color:#fff;">PRO ENGINE</span></h1>
+            </div>
+            <div class="header-right">
+                <p>Athlete: <span style="color:#fff;">${name}</span></p>
+                <p>Target: <span style="color:#fff;">${kg} KG</span></p>
+                <p>Protocol: <span style="color:var(--gold);">${currentDays} DAYS</span></p>
+                <p>ID: <span style="color:#fff;">#${Math.floor(1000 + Math.random() * 9000)}</span></p>
+            </div>
+        </div>
+        
+        <div style="padding: 20px;">
+            <div style="display:flex; gap:20px; margin-bottom:30px;">
+                <div style="flex:1; background:#111; padding:15px; border-radius:10px; border:1px solid #222;">
+                    <small style="color:var(--gold); font-weight:900; font-size:0.6rem; display:block; margin-bottom:5px;">STRATEGY</small>
+                    <p style="font-size:0.8rem; font-weight:600; margin:0;">METABOLIC CONDITIONING & PEAKING</p>
+                </div>
+                <div style="flex:1; background:#111; padding:15px; border-radius:10px; border:1px solid #222;">
+                    <small style="color:var(--gold); font-weight:900; font-size:0.6rem; display:block; margin-bottom:5px;">FOCUS</small>
+                    <p style="font-size:0.8rem; font-weight:600; margin:0;">CELLULAR VOLUMIZATION & HARDNESS</p>
+                </div>
+            </div>
+    `;
+
+    // --- STEP 2: THE DAY BLOCK LOOP ---
+    for (let i = 1; i <= currentDays; i++) {
+        let dailyCarbs = Math.round(baseCarbs * Math.pow(currentDays === 15 ? 0.95 : 0.98, i-1));
+        let isRefeed = (currentDays === 30 && i % 7 === 0);
+        let isLastDay = (i === currentDays);
+        if (isRefeed) dailyCarbs = Math.round(kg * 4);
+        if (isLastDay) dailyCarbs = Math.round(kg * 3.5);
+
+        let dailyCals = (protein * 4) + (dailyCarbs * 4) + (fats * 9);
+        let waterIntake = isLastDay ?
+
 </script>
 </body>
 </html>
